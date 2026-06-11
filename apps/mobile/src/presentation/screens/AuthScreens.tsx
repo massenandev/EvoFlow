@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { Alert, Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { Button } from "../components/Button";
 import { AppTheme } from "../theme/theme";
+
+const evoFlowIcon = require("../../../assets/logo-mark.png");
 
 export function OnboardingAuthScreen({
   mode,
@@ -44,9 +46,9 @@ export function OnboardingAuthScreen({
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={[styles.keyboardScreen, { backgroundColor: theme.background }]}>
       <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.authContainer}>
         <View style={styles.brandBlock}>
-          <Text style={styles.seed}>🌱</Text>
+          <Image source={evoFlowIcon} style={styles.brandIcon} resizeMode="contain" />
           <Text style={[styles.brand, { color: theme.text }]}>EvoFlow</Text>
-          <Text style={[styles.tagline, { color: theme.muted }]}>Build consistency every day</Text>
+          <Text style={[styles.tagline, { color: theme.muted }]}>Evolve one day at a time</Text>
         </View>
 
         <View style={styles.authPanel}>
@@ -204,17 +206,16 @@ const styles = StyleSheet.create({
   authContainer: {
     flexGrow: 1,
     paddingHorizontal: 28,
-    paddingTop: 54,
     paddingBottom: 34,
     justifyContent: "center"
   },
   brandBlock: {
     alignItems: "center",
-    marginBottom: 34
+    marginBottom: 30
   },
-  seed: {
-    fontSize: 48,
-    marginBottom: 18
+  brandIcon: {
+    width: 90,
+    height: 90,
   },
   formContainer: {
     flexGrow: 1,

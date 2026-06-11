@@ -45,7 +45,7 @@ export function DashboardScreen({ habits, days, theme, loading, error, onCreate,
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.header}>
           <View>
-            <Text style={[styles.title, { color: theme.text }]}>My Habits</Text>
+            <Text style={[styles.title, { color: theme.text }]}>EvoFlow</Text>
           </View>
           <Button label="+" theme={theme} onPress={onCreate} />
         </View>
