@@ -1,6 +1,6 @@
-# Habiflow API
+# EvoFlow API
 
-The Habiflow API is a NestJS backend that owns habit persistence, completion state, history, validation, and streak calculation. It uses PostgreSQL through Prisma and exposes a REST API consumed by the Expo mobile app.
+The EvoFlow API is a NestJS backend that owns habit persistence, completion state, history, validation, and streak calculation. It uses PostgreSQL through Prisma and exposes a REST API consumed by the Expo mobile app.
 
 ## Tech Stack
 
@@ -50,11 +50,11 @@ API URLs:
 Useful commands:
 
 ```sh
-pnpm --filter @habiflow/api dev
-pnpm --filter @habiflow/api build
-pnpm --filter @habiflow/api test
-pnpm --filter @habiflow/api db:generate
-pnpm --filter @habiflow/api db:push
+pnpm --filter @evoflow/api dev
+pnpm --filter @evoflow/api build
+pnpm --filter @evoflow/api test
+pnpm --filter @evoflow/api db:generate
+pnpm --filter @evoflow/api db:push
 ```
 
 ## Database
@@ -63,9 +63,9 @@ Docker provides PostgreSQL:
 
 - Container host: `postgres:5432`
 - Local machine port: `5433`
-- Database: `habiflow`
-- User: `habiflow`
-- Password: `habiflow`
+- Database: `evoflow`
+- User: `evoflow`
+- Password: `evoflow`
 
 The Prisma schema lives at `apps/api/prisma/schema.prisma`. The Docker API startup command runs:
 
@@ -102,7 +102,7 @@ Swagger has full request-body and query-parameter examples at `/docs`.
 ## Testing
 
 ```sh
-pnpm --filter @habiflow/api test
+pnpm --filter @evoflow/api test
 ```
 
 Current tests cover:

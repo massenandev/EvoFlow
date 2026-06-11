@@ -1,6 +1,6 @@
-# Habiflow Mobile
+# EvoFlow Mobile
 
-The Habiflow mobile app is an Expo React Native app for iOS and Android. It renders the habit dashboard, create/edit flows, settings, history, local reminders, and printable PDF export.
+The EvoFlow mobile app is an Expo React Native app for iOS and Android. It renders the habit dashboard, create/edit flows, settings, history, local reminders, and printable PDF export.
 
 ## Tech Stack
 
@@ -74,17 +74,17 @@ Use a LAN IP when testing on a physical phone, because `localhost` on the phone 
 ## Commands
 
 ```sh
-pnpm --filter @habiflow/mobile start
-pnpm --filter @habiflow/mobile ios
-pnpm --filter @habiflow/mobile android
-pnpm --filter @habiflow/mobile test
-pnpm --filter @habiflow/mobile exec tsc --noEmit
+pnpm --filter @evoflow/mobile start
+pnpm --filter @evoflow/mobile ios
+pnpm --filter @evoflow/mobile android
+pnpm --filter @evoflow/mobile test
+pnpm --filter @evoflow/mobile exec tsc --noEmit
 ```
 
 ## Testing
 
 ```sh
-pnpm --filter @habiflow/mobile test
+pnpm --filter @evoflow/mobile test
 ```
 
 Current tests cover mobile presenter helpers, including recent-day range limiting, completion display logic, and streak goal labels.

@@ -1,7 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ThemeMode } from "../domain/types";
 
-const SETTINGS_KEY = "habiflow.settings";
+const SETTINGS_KEY = "evoflow.settings";
+const LEGACY_SETTINGS_KEY = "habiflow.settings";
 
 export interface UserSettings {
   theme: ThemeMode;
@@ -14,8 +15,17 @@ export const defaultSettings: UserSettings = {
 };
 
 export async function loadSettings(): Promise<UserSettings> {
+  const legacy = await AsyncStorage.getItem(LEGACY_SETTINGS_KEY);
   const raw = await AsyncStorage.getItem(SETTINGS_KEY);
-  return raw ? { ...defaultSettings, ...JSON.parse(raw) } : defaultSettings;
+  if (raw) {
+    return { ...defaultSettings, ...JSON.parse(raw) };
+  }
+  if (legacy) {
+    await AsyncStorage.setItem(SETTINGS_KEY, legacy);
+    await AsyncStorage.removeItem(LEGACY_SETTINGS_KEY);
+    return { ...defaultSettings, ...JSON.parse(legacy) };
+  }
+  return defaultSettings;
 }
 
 export async function saveSettings(settings: UserSettings): Promise<void> {

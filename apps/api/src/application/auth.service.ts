@@ -128,7 +128,7 @@ export class AuthService {
       }
     });
     // Local MVP email adapter: replace with SMTP/provider delivery before production.
-    console.log(`[Habiflow] Password reset token for ${user.email}: ${token}`);
+    console.log(`[EvoFlow] Password reset token for ${user.email}: ${token}`);
   }
 
   async resetPassword(token: string, password: string): Promise<void> {

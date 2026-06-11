@@ -8,8 +8,8 @@ RUN pnpm install --frozen-lockfile=false
 
 FROM deps AS build
 COPY apps/api apps/api
-RUN pnpm --filter @habiflow/api db:generate
-RUN pnpm --filter @habiflow/api build
+RUN pnpm --filter @evoflow/api db:generate
+RUN pnpm --filter @evoflow/api build
 
 FROM node:22-alpine AS runner
 WORKDIR /app
@@ -21,4 +21,4 @@ COPY --from=deps /app/apps/api/node_modules ./apps/api/node_modules
 COPY --from=build /app/apps/api/dist ./apps/api/dist
 COPY apps/api/prisma ./apps/api/prisma
 COPY apps/api/package.json ./apps/api/package.json
-CMD ["pnpm", "--filter", "@habiflow/api", "db:push:start"]
+CMD ["pnpm", "--filter", "@evoflow/api", "db:push:start"]

@@ -1,6 +1,6 @@
-# Habiflow
+# EvoFlow
 
-Habiflow is a full-stack mobile habit tracker for iOS and Android. Users create personalized habits, mark them done or undone, view recent progress and streaks, review habit history, switch themes, schedule local reminders, and export printable habit trackers as PDFs. The app supports guest mode plus account onboarding with email/password and social login.
+EvoFlow is a full-stack mobile habit tracker for iOS and Android. Users create personalized habits, mark them done or undone, view recent progress and streaks, review habit history, switch themes, schedule local reminders, and export printable habit trackers as PDFs. The app supports guest mode plus account onboarding with email/password and social login.
 
 ## Tech Stack
 
@@ -58,8 +58,8 @@ Docker runs PostgreSQL and the API. The API runs `prisma db push` on startup so 
 pnpm test
 pnpm test:api
 pnpm test:mobile
-pnpm --filter @habiflow/api build
-pnpm --filter @habiflow/mobile exec tsc --noEmit
+pnpm --filter @evoflow/api build
+pnpm --filter @evoflow/mobile exec tsc --noEmit
 docker compose ps
 ```
 

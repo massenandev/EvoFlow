@@ -45,7 +45,7 @@ export function OnboardingAuthScreen({
       <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.authContainer}>
         <View style={styles.brandBlock}>
           <Text style={styles.seed}>🌱</Text>
-          <Text style={[styles.brand, { color: theme.text }]}>HabiFlow</Text>
+          <Text style={[styles.brand, { color: theme.text }]}>EvoFlow</Text>
           <Text style={[styles.tagline, { color: theme.muted }]}>Build consistency every day</Text>
         </View>
 

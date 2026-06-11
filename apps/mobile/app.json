@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "Habiflow",
-    "slug": "habiflow",
+    "name": "EvoFlow",
+    "slug": "evoflow",
     "version": "0.1.0",
     "orientation": "portrait",
-    "scheme": "habiflow",
+    "scheme": "evoflow",
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true
