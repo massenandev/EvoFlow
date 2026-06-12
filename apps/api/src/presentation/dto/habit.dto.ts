@@ -12,6 +12,13 @@ export class GoalDto {
   @Min(1)
   @Max(12)
   completionsPerDay!: number;
+
+  @ApiPropertyOptional({ example: 3, minimum: 1, maximum: 7, description: "How many days this habit should be completed each week." })
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(7)
+  targetDaysPerWeek!: number;
 }
 
 export class ReminderDto {

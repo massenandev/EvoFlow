@@ -23,6 +23,16 @@ export class HabitsController {
     return this.habits.listActive(this.ownerFrom(request, deviceId), from, to);
   }
 
+  @Get("archived")
+  @ApiOperation({ summary: "List archived habits for a device and date range" })
+  @ApiQuery({ name: "deviceId", example: "device-1749550000000-abcd1234" })
+  @ApiQuery({ name: "from", example: "2026-06-08" })
+  @ApiQuery({ name: "to", example: "2026-06-10" })
+  @ApiResponse({ status: 200, description: "Archived habits with visible completions and streaks." })
+  archived(@Req() request: AuthenticatedRequest, @Query("deviceId") deviceId: string, @Query("from") from: string, @Query("to") to: string) {
+    return this.habits.listArchived(this.ownerFrom(request, deviceId), from, to);
+  }
+
   @Post()
   @ApiOperation({ summary: "Create a habit" })
   @ApiBody({ type: CreateHabitDto })
@@ -49,6 +59,15 @@ export class HabitsController {
   @ApiResponse({ status: 200, description: "Archived habit." })
   archive(@Req() request: AuthenticatedRequest, @Param("habitId") habitId: string, @Body() body: DeviceDto) {
     return this.habits.archive(habitId, this.ownerFrom(request, body.deviceId));
+  }
+
+  @Post(":habitId/restore")
+  @ApiOperation({ summary: "Restore an archived habit" })
+  @ApiParam({ name: "habitId", description: "Habit UUID" })
+  @ApiBody({ type: DeviceDto })
+  @ApiResponse({ status: 200, description: "Restored habit." })
+  restore(@Req() request: AuthenticatedRequest, @Param("habitId") habitId: string, @Body() body: DeviceDto) {
+    return this.habits.restore(habitId, this.ownerFrom(request, body.deviceId));
   }
 
   @Delete(":habitId")

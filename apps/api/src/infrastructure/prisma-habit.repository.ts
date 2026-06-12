@@ -24,7 +24,7 @@ export class PrismaHabitRepository implements HabitRepository {
           shape: "circle",
           goalType: item.goal.streakGoal,
           targetCount: item.goal.completionsPerDay,
-          targetPeriod: "day",
+          targetPeriod: this.toTargetPeriod(item.goal.targetDaysPerWeek),
           reminderEnabled: item.reminder.count > 0,
           reminderTime: item.reminder.times[0] ?? null,
           reminderCount: item.reminder.count,
@@ -41,7 +41,7 @@ export class PrismaHabitRepository implements HabitRepository {
           shape: "circle",
           goalType: item.goal.streakGoal,
           targetCount: item.goal.completionsPerDay,
-          targetPeriod: "day",
+          targetPeriod: this.toTargetPeriod(item.goal.targetDaysPerWeek),
           reminderEnabled: item.reminder.count > 0,
           reminderTime: item.reminder.times[0] ?? null,
           reminderCount: item.reminder.count,
@@ -73,6 +73,26 @@ export class PrismaHabitRepository implements HabitRepository {
       this.prisma.habit.findMany({
         where: { userId, status: "active" },
         orderBy: { createdAt: "asc" }
+      })
+    );
+    return rows.map((row) => this.toHabit(row));
+  }
+
+  async listArchivedByDevice(deviceId: string): Promise<Habit[]> {
+    const rows = await this.safe(
+      this.prisma.habit.findMany({
+        where: { deviceId, userId: null, status: "archived" },
+        orderBy: { updatedAt: "desc" }
+      })
+    );
+    return rows.map((row) => this.toHabit(row));
+  }
+
+  async listArchivedByUser(userId: string): Promise<Habit[]> {
+    const rows = await this.safe(
+      this.prisma.habit.findMany({
+        where: { userId, status: "archived" },
+        orderBy: { updatedAt: "desc" }
       })
     );
     return rows.map((row) => this.toHabit(row));
@@ -206,7 +226,8 @@ export class PrismaHabitRepository implements HabitRepository {
       shape: "circle",
       goal: {
         streakGoal: row.goalType as HabitProps["goal"]["streakGoal"],
-        completionsPerDay: row.targetCount
+        completionsPerDay: row.targetCount,
+        targetDaysPerWeek: this.fromTargetPeriod(row.targetPeriod)
       },
       reminder: {
         count: row.reminderCount ?? (row.reminderEnabled ? 1 : 0),
@@ -237,5 +258,14 @@ export class PrismaHabitRepository implements HabitRepository {
       createdAt: row.createdAt,
       updatedAt: row.updatedAt
     };
+  }
+
+  private toTargetPeriod(targetDaysPerWeek: number): string {
+    return `week:${targetDaysPerWeek}`;
+  }
+
+  private fromTargetPeriod(targetPeriod: string): number {
+    const match = /^week:([1-7])$/.exec(targetPeriod);
+    return match ? Number(match[1]) : 7;
   }
 }

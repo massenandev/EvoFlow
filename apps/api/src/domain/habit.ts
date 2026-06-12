@@ -65,6 +65,10 @@ export class Habit {
     return Habit.rehydrate({ ...this.props, status: "archived", updatedAt: now });
   }
 
+  restore(now = new Date()): Habit {
+    return Habit.rehydrate({ ...this.props, status: "active", updatedAt: now });
+  }
+
   get snapshot(): HabitProps {
     return { ...this.props, goal: { ...this.props.goal }, reminder: { ...this.props.reminder } };
   }

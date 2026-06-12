@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { BarChart3, CalendarDays, FileText, Settings } from "lucide-react-native";
+import { Archive, BarChart3, CalendarDays, FileText, Settings } from "lucide-react-native";
 import { recentDays } from "../../application/date-range";
 import { Habit } from "../../domain/types";
 import { Button } from "../components/Button";
@@ -19,6 +19,7 @@ interface Props {
   onCreate: () => void;
   onSettings: () => void;
   onHistory: () => void;
+  onArchived: () => void;
   onReport: () => void;
   onExport: () => void;
   onDaysChange: (days: number) => void;
@@ -28,7 +29,7 @@ interface Props {
   onDelete: (habit: Habit) => void;
 }
 
-export function DashboardScreen({ habits, days, theme, loading, error, onCreate, onSettings, onHistory, onReport, onExport, onDaysChange, onToggle, onEdit, onArchive, onDelete }: Props) {
+export function DashboardScreen({ habits, days, theme, loading, error, onCreate, onSettings, onHistory, onArchived, onReport, onExport, onDaysChange, onToggle, onEdit, onArchive, onDelete }: Props) {
   const [rangeOpen, setRangeOpen] = useState(false);
   const dates = recentDays(days);
   const trackWidth = habitDateTrackWidth(days);
@@ -84,6 +85,7 @@ export function DashboardScreen({ habits, days, theme, loading, error, onCreate,
       </ScrollView>
       <View style={[styles.bottomMenu, { backgroundColor: theme.surface, borderColor: theme.border }]}>
         <MenuButton label="History" theme={theme} onPress={onHistory} icon={<CalendarDays size={23} color={theme.text} strokeWidth={2.2} />} />
+        <MenuButton label="Archived habits" theme={theme} onPress={onArchived} icon={<Archive size={23} color={theme.text} strokeWidth={2.2} />} />
         <MenuButton label="Reports" theme={theme} onPress={onReport} icon={<BarChart3 size={23} color={theme.text} strokeWidth={2.2} />} />
         <MenuButton label="Export PDF" theme={theme} onPress={onExport} icon={<FileText size={23} color={theme.text} strokeWidth={2.2} />} />
         <MenuButton label="Settings" theme={theme} onPress={onSettings} icon={<Settings size={23} color={theme.text} strokeWidth={2.2} />} />
@@ -201,8 +203,8 @@ const styles = StyleSheet.create({
   },
   bottomMenu: {
     position: "absolute",
-    left: 72,
-    right: 72,
+    left: 42,
+    right: 42,
     bottom: 28,
     minHeight: 58,
     borderWidth: 1,

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Switch, Text, View } from "react-native";
 import { Habit } from "../../domain/types";
 import { Button } from "../components/Button";
 import { AppTheme } from "../theme/theme";
@@ -37,12 +37,16 @@ export function ExportScreen({ habits, theme, onExport, onBack }: Props) {
         return (
           <View key={habit.id} style={[styles.row, { backgroundColor: theme.surface, borderColor: theme.border }]}> 
             <Text style={[styles.name, { color: theme.text }]}>{habit.emoji} {habit.name}</Text>
-            <Button
-              label={included ? "Included" : "Include"}
-              theme={theme}
-              variant={included ? "primary" : "secondary"}
-              onPress={() => toggleInclude(habit.id)}
-            />
+            <View style={styles.toggleGroup}>
+              <Text style={[styles.toggleLabel, { color: included ? theme.text : theme.muted }]}>{included ? "Included" : "Not included"}</Text>
+              <Switch
+                value={included}
+                onValueChange={() => toggleInclude(habit.id)}
+                trackColor={{ false: theme.border, true: theme.primary }}
+                thumbColor="#FFFFFF"
+                ios_backgroundColor={theme.border}
+              />
+            </View>
           </View>
         );
       })}
@@ -80,6 +84,17 @@ const styles = StyleSheet.create({
   name: {
     flex: 1,
     fontSize: 17,
+    fontWeight: "800"
+  },
+  toggleGroup: {
+    minWidth: 128,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    gap: 8
+  },
+  toggleLabel: {
+    fontSize: 13,
     fontWeight: "800"
   }
 });

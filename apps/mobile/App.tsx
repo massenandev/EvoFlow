@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Alert, Platform, SafeAreaView, useColorScheme } from "react-native";
 import * as AppleAuthentication from "expo-apple-authentication";
 import * as Google from "expo-auth-session/providers/google";
+import { completedDaysInWeek, isCompletedForDate } from "./src/application/habit-presenter";
 import { AuthMode, AuthSession, Habit, HabitFormValues, ScreenName } from "./src/domain/types";
 import { HabitApiClient } from "./src/infrastructure/api-client";
 import { clearAuthSession, loadAuthSession, saveAuthSession } from "./src/infrastructure/auth-store";
@@ -13,10 +14,12 @@ import { DashboardScreen } from "./src/presentation/screens/DashboardScreen";
 import { ExportScreen } from "./src/presentation/screens/ExportScreen";
 import { HabitFormScreen } from "./src/presentation/screens/HabitFormScreen";
 import { HistoryScreen } from "./src/presentation/screens/HistoryScreen";
+import { ArchivedHabitsScreen } from "./src/presentation/screens/ArchivedHabitsScreen";
 import { ReportScreen } from "./src/presentation/screens/ReportScreen";
 import { SettingsScreen } from "./src/presentation/screens/SettingsScreen";
 import { ForgotPasswordScreen, GuestImportScreen, OnboardingAuthScreen } from "./src/presentation/screens/AuthScreens";
 import { resolveTheme } from "./src/presentation/theme/theme";
+import { WeeklyGoalCelebration } from "./src/presentation/components/WeeklyGoalCelebration";
 
 const api = new HabitApiClient();
 const missingGoogleIosClientId = "missing-google-ios-client-id";
@@ -38,6 +41,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [backendOnline, setBackendOnline] = useState(false);
+  const [weeklyGoalCelebrationVisible, setWeeklyGoalCelebrationVisible] = useState(false);
   const theme = useMemo(() => resolveTheme(settings.theme, systemTheme), [settings.theme, systemTheme]);
   const [, googleResponse, promptGoogle] = Google.useIdTokenAuthRequest({
     iosClientId: googleIosClientId,
@@ -147,6 +151,9 @@ export default function App() {
     try {
       const updated = await api.toggleHabit(habit.id, deviceId, date);
       setHabits((items) => items.map((item) => (item.id === updated.id ? updated : item)));
+      if (completedWeeklyGoal(habit, updated, date)) {
+        setWeeklyGoalCelebrationVisible(true);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to toggle habit.");
     }
@@ -304,6 +311,7 @@ export default function App() {
           }}
           onSettings={() => setScreen("settings")}
           onHistory={() => setScreen("history")}
+          onArchived={() => setScreen("archived")}
           onReport={() => setScreen("report")}
           onExport={() => setScreen("export")}
           onDaysChange={(dashboardDays) => {
@@ -350,12 +358,22 @@ export default function App() {
           onDelete={selectedHabit ? deleteHabit : undefined}
         />
       ) : null}
-      {screen === "history" ? <HistoryScreen habits={habits} theme={theme} onBack={() => setScreen("dashboard")} /> : null}
+      {screen === "history" && deviceId ? <HistoryScreen api={api} deviceId={deviceId} habits={habits} theme={theme} onBack={() => setScreen("dashboard")} /> : null}
+      {screen === "archived" && deviceId ? <ArchivedHabitsScreen api={api} deviceId={deviceId} theme={theme} onBack={() => setScreen("dashboard")} onHabitsChanged={() => refresh()} /> : null}
       {screen === "report" && deviceId ? <ReportScreen api={api} deviceId={deviceId} habits={habits} theme={theme} onBack={() => setScreen("dashboard")} /> : null}
       {screen === "settings" ? <SettingsScreen settings={settings} backendOnline={backendOnline} theme={theme} onChange={updateSettings} onBack={() => setScreen("dashboard")} onLogout={authMode === "authenticated" ? logout : undefined} onDeleteAccount={authMode === "authenticated" ? deleteAccount : undefined} /> : null}
       {screen === "export" ? <ExportScreen habits={habits} theme={theme} onExport={exportPdf} onBack={() => setScreen("dashboard")} /> : null}
+      <WeeklyGoalCelebration visible={weeklyGoalCelebrationVisible} onDismiss={() => setWeeklyGoalCelebrationVisible(false)} />
     </SafeAreaView>
   );
+}
+
+function completedWeeklyGoal(previous: Habit, updated: Habit, date: string): boolean {
+  if (!isCompletedForDate(updated, date)) {
+    return false;
+  }
+  const targetDays = updated.goal.targetDaysPerWeek ?? previous.goal.targetDaysPerWeek ?? 7;
+  return completedDaysInWeek(previous, date) < targetDays && completedDaysInWeek(updated, date) >= targetDays;
 }
 
 function googleEnv(name: string, fallback: string): string {

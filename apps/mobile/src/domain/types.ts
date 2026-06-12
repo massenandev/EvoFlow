@@ -1,7 +1,7 @@
 export type HabitShape = "circle";
 export type StreakGoal = "none" | "daily" | "week" | "month";
 export type ThemeMode = "system" | "light" | "dark";
-export type ScreenName = "welcome" | "signup" | "login" | "forgotPassword" | "dashboard" | "create" | "edit" | "history" | "report" | "settings" | "export" | "guestImport";
+export type ScreenName = "welcome" | "signup" | "login" | "forgotPassword" | "dashboard" | "create" | "edit" | "history" | "archived" | "report" | "settings" | "export" | "guestImport";
 export type AuthMode = "loading" | "guest" | "authenticated" | "signedOut";
 
 export interface AuthUser {
@@ -19,6 +19,7 @@ export interface AuthSession {
 export interface HabitGoal {
   streakGoal: StreakGoal;
   completionsPerDay: number;
+  targetDaysPerWeek: number;
 }
 
 export interface HabitCompletion {

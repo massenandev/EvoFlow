@@ -47,7 +47,11 @@ export function assertGoal(goal: HabitGoal): HabitGoal {
   if (!Number.isInteger(goal.completionsPerDay) || goal.completionsPerDay < 1 || goal.completionsPerDay > 12) {
     throw new ValidationError("Completions per day must be between 1 and 12.");
   }
-  return goal;
+  const targetDaysPerWeek = goal.targetDaysPerWeek ?? 7;
+  if (!Number.isInteger(targetDaysPerWeek) || targetDaysPerWeek < 1 || targetDaysPerWeek > 7) {
+    throw new ValidationError("Weekly target must be between 1 and 7 days.");
+  }
+  return { ...goal, targetDaysPerWeek };
 }
 
 export function assertReminderSettings(reminder: ReminderSettings): ReminderSettings {

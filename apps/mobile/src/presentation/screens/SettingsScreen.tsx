@@ -25,12 +25,6 @@ export function SettingsScreen({ settings, backendOnline, theme, onChange, onBac
           <Button key={mode} label={mode} theme={theme} variant={settings.theme === mode ? "primary" : "secondary"} onPress={() => onChange({ ...settings, theme: mode })} />
         ))}
       </View>
-      <Text style={[styles.label, { color: theme.muted }]}>Dashboard days</Text>
-      <View style={styles.row}>
-        {[1, 2, 3, 4, 5].map((days) => (
-          <Button key={days} label={String(days)} theme={theme} variant={settings.dashboardDays === days ? "primary" : "secondary"} onPress={() => onChange({ ...settings, dashboardDays: days })} />
-        ))}
-      </View>
       <View style={[styles.status, { borderColor: theme.border, backgroundColor: theme.surface }]}>
         <Text style={{ color: theme.text }}>Backend: {backendOnline ? "online" : "offline"}</Text>
       </View>

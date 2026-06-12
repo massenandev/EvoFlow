@@ -8,7 +8,7 @@ const input = {
   name: "Read",
   emoji: "📚",
   color: "#7C3AED",
-  goal: { streakGoal: "daily" as const, completionsPerDay: 2 },
+  goal: { streakGoal: "daily" as const, completionsPerDay: 2, targetDaysPerWeek: 3 },
   reminder: { count: 1, times: ["08:30"] }
 };
 
@@ -22,6 +22,7 @@ describe("HabitService", () => {
 
     expect(habits).toHaveLength(1);
     expect(habits[0].name).toBe("Read");
+    expect(habits[0].goal.targetDaysPerWeek).toBe(3);
   });
 
   it("toggles today's completion done and undone", async () => {
@@ -72,6 +73,22 @@ describe("HabitService", () => {
     const habits = await service.listActive(input.deviceId, "2026-06-08", "2026-06-10");
 
     expect(habits).toHaveLength(0);
+  });
+
+  it("lists and restores archived habits", async () => {
+    const repo = new InMemoryHabitRepository();
+    const service = new HabitService(repo);
+    const habit = await service.create(input);
+    await service.archive(habit.id, input.deviceId);
+
+    const archived = await service.listArchived(input.deviceId, "2026-06-08", "2026-06-10");
+    const restored = await service.restore(habit.id, input.deviceId);
+    const active = await service.listActive(input.deviceId, "2026-06-08", "2026-06-10");
+
+    expect(archived).toHaveLength(1);
+    expect(archived[0].status).toBe("archived");
+    expect(restored.status).toBe("active");
+    expect(active).toHaveLength(1);
   });
 
   it("claims guest habits into an authenticated user account", async () => {

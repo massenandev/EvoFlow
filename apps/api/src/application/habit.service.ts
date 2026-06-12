@@ -61,6 +61,14 @@ export class HabitService {
     return this.toDto(archived, completions);
   }
 
+  async restore(habitId: string, owner: HabitOwnerInput): Promise<HabitDto> {
+    const habit = await this.requireOwnedHabit(habitId, this.normalizeOwner(owner));
+    const restored = habit.restore();
+    await this.habits.save(restored);
+    const completions = await this.habits.listAllCompletions(habitId);
+    return this.toDto(restored, completions);
+  }
+
   async delete(habitId: string, owner: HabitOwnerInput): Promise<void> {
     await this.requireOwnedHabit(habitId, this.normalizeOwner(owner));
     await this.habits.deleteById(habitId);
@@ -74,6 +82,22 @@ export class HabitService {
     const active = normalizedOwner.userId ? await this.habits.listActiveByUser(normalizedOwner.userId) : await this.habits.listActiveByDevice(normalizedOwner.deviceId);
     return Promise.all(
       active.map(async (habit) => {
+        const snapshot = habit.snapshot;
+        const completions = await this.habits.listCompletions(snapshot.id, from, to);
+        const allCompletions = await this.habits.listAllCompletions(snapshot.id);
+        return this.toDto(habit, completions, allCompletions);
+      })
+    );
+  }
+
+  async listArchived(owner: HabitOwnerInput, from: string, to: string): Promise<HabitDto[]> {
+    const normalizedOwner = this.normalizeOwner(owner);
+    assertDeviceId(normalizedOwner.deviceId);
+    assertIsoDate(from);
+    assertIsoDate(to);
+    const archived = normalizedOwner.userId ? await this.habits.listArchivedByUser(normalizedOwner.userId) : await this.habits.listArchivedByDevice(normalizedOwner.deviceId);
+    return Promise.all(
+      archived.map(async (habit) => {
         const snapshot = habit.snapshot;
         const completions = await this.habits.listCompletions(snapshot.id, from, to);
         const allCompletions = await this.habits.listAllCompletions(snapshot.id);

@@ -5,6 +5,7 @@ export type StreakGoal = "none" | "daily" | "week" | "month";
 export interface HabitGoal {
   streakGoal: StreakGoal;
   completionsPerDay: number;
+  targetDaysPerWeek: number;
 }
 
 export interface ReminderSettings {

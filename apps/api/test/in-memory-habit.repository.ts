@@ -22,6 +22,14 @@ export class InMemoryHabitRepository implements HabitRepository {
     return [...this.habits.values()].filter((habit) => habit.snapshot.userId === userId && habit.snapshot.status === "active");
   }
 
+  async listArchivedByDevice(deviceId: string): Promise<Habit[]> {
+    return [...this.habits.values()].filter((habit) => habit.snapshot.deviceId === deviceId && !habit.snapshot.userId && habit.snapshot.status === "archived");
+  }
+
+  async listArchivedByUser(userId: string): Promise<Habit[]> {
+    return [...this.habits.values()].filter((habit) => habit.snapshot.userId === userId && habit.snapshot.status === "archived");
+  }
+
   async claimGuestHabits(deviceId: string, userId: string): Promise<number> {
     let count = 0;
     for (const habit of this.habits.values()) {

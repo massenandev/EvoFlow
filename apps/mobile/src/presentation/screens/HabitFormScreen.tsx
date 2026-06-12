@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Alert, GestureResponderEvent, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { streakGoalLabel } from "../../application/habit-presenter";
 import { Habit, HabitFormValues, StreakGoal } from "../../domain/types";
@@ -31,7 +31,7 @@ const colors = [
 const presetColors = colors.slice(1);
 const streakGoals: StreakGoal[] = ["none", "daily", "week", "month"];
 const reminderCounts = [0, 1, 2, 3, 4, 5];
-const completionCounts = [1, 2, 3, 4, 5];
+const weeklyTargets = [1, 2, 3, 4, 5, 6, 7];
 const colorGridRows = 14;
 const colorGridColumns = 24;
 const emojiGroups = [
@@ -155,13 +155,11 @@ interface EmojiChoice {
 export function HabitFormScreen({ theme, habit, onSave, onBack, onArchive, onDelete }: Props) {
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false);
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
-  const [values, setValues] = useState<HabitFormValues>({
-    name: habit?.name ?? "",
-    emoji: habit?.emoji ?? "",
-    color: habit?.color ?? colors[0],
-    goal: habit?.goal ?? { streakGoal: "daily", completionsPerDay: 1 },
-    reminder: habit?.reminder ?? { count: 0, times: [] }
-  });
+  const [values, setValues] = useState<HabitFormValues>(() => initialValues(habit));
+
+  useEffect(() => {
+    setValues(initialValues(habit));
+  }, [habit?.id]);
 
   function save() {
     if (!values.name.trim()) {
@@ -245,8 +243,14 @@ export function HabitFormScreen({ theme, habit, onSave, onBack, onArchive, onDel
       <Field label="Streak goal" theme={theme}>
         <Segment values={streakGoals} selected={values.goal.streakGoal} theme={theme} onSelect={(streakGoal) => setValues({ ...values, goal: { ...values.goal, streakGoal: streakGoal as StreakGoal } })} labels={streakGoalLabel} />
       </Field>
-      <Field label="Completions by day" theme={theme}>
-        <Segment values={completionCounts.map(String)} selected={String(values.goal.completionsPerDay)} theme={theme} onSelect={(count) => setValues({ ...values, goal: { ...values.goal, completionsPerDay: Number(count) } })} labels={(count) => `${count}/day`} />
+      <Field label={`Weekly goal: ${values.goal.targetDaysPerWeek} day${values.goal.targetDaysPerWeek === 1 ? "" : "s"}`} theme={theme}>
+        <Segment
+          values={weeklyTargets.map(String)}
+          selected={String(values.goal.targetDaysPerWeek)}
+          theme={theme}
+          onSelect={(targetDaysPerWeek) => setValues({ ...values, goal: { ...values.goal, targetDaysPerWeek: Number(targetDaysPerWeek) } })}
+          labels={(targetDaysPerWeek) => `${targetDaysPerWeek}`}
+        />
       </Field>
       <Field label={`${values.reminder.count} active reminder${values.reminder.count === 1 ? "" : "s"}`} theme={theme}>
         <Segment values={reminderCounts.map(String)} selected={String(values.reminder.count)} theme={theme} onSelect={(count) => setReminderCount(Number(count))} labels={(count) => `${count}`} />
@@ -260,6 +264,16 @@ export function HabitFormScreen({ theme, habit, onSave, onBack, onArchive, onDel
       <Button label="Back" theme={theme} variant="secondary" onPress={onBack} />
     </ScrollView>
   );
+}
+
+function initialValues(habit?: Habit): HabitFormValues {
+  return {
+    name: habit?.name ?? "",
+    emoji: habit?.emoji ?? "",
+    color: habit?.color ?? colors[0],
+    goal: habit?.goal ? { ...habit.goal, targetDaysPerWeek: habit.goal.targetDaysPerWeek ?? 7 } : { streakGoal: "daily", completionsPerDay: 1, targetDaysPerWeek: 7 },
+    reminder: habit?.reminder ?? { count: 0, times: [] }
+  };
 }
 
 function defaultReminderTime(index: number): string {

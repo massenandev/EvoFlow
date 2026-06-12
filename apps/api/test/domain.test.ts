@@ -9,7 +9,7 @@ const baseInput = {
   name: "Drink water",
   emoji: "💧",
   color: "#2DD4BF",
-  goal: { streakGoal: "daily" as const, completionsPerDay: 1 },
+  goal: { streakGoal: "daily" as const, completionsPerDay: 1, targetDaysPerWeek: 7 },
   reminder: { count: 0, times: [] }
 };
 
@@ -25,8 +25,19 @@ describe("Habit domain", () => {
     expect(archived.snapshot.status).toBe("archived");
   });
 
+  it("restores an archived habit without deleting its identity", () => {
+    const habit = Habit.create(baseInput).archive();
+    const restored = habit.restore();
+    expect(restored.snapshot.id).toBe(habit.snapshot.id);
+    expect(restored.snapshot.status).toBe("active");
+  });
+
   it("requires reminder times to match reminder count", () => {
     expect(() => Habit.create({ ...baseInput, reminder: { count: 1, times: [] } })).toThrow(ValidationError);
+  });
+
+  it("validates weekly target days", () => {
+    expect(() => Habit.create({ ...baseInput, goal: { ...baseInput.goal, targetDaysPerWeek: 8 } })).toThrow(ValidationError);
   });
 });
 
@@ -49,7 +60,7 @@ describe("StreakService", () => {
   });
 
   it("respects completions-per-day before adding a daily date to the total", () => {
-    const goal = { streakGoal: "daily" as const, completionsPerDay: 2 };
+    const goal = { streakGoal: "daily" as const, completionsPerDay: 2, targetDaysPerWeek: 7 };
     const completions = [completion("2026-06-08", 2), completion("2026-06-09", 1), completion("2026-06-10", 2)];
     expect(service.calculate(goal, completions, "2026-06-10")).toEqual({ current: 1, best: 1 });
   });

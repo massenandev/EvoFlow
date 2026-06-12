@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { recentDays } from "../src/application/date-range";
-import { streakGoalLabel, isCompletedForDate } from "../src/application/habit-presenter";
+import { completedDaysInWeek, reachedWeeklyTarget, streakGoalLabel, isCompletedForDate } from "../src/application/habit-presenter";
 import { Habit } from "../src/domain/types";
 
 describe("mobile presenters", () => {
@@ -16,6 +16,11 @@ describe("mobile presenters", () => {
   it("renders goal labels", () => {
     expect(streakGoalLabel("week")).toBe("Week");
   });
+
+  it("checks weekly target progress", () => {
+    expect(completedDaysInWeek(habit, "2026-06-10")).toBe(1);
+    expect(reachedWeeklyTarget({ ...habit, goal: { ...habit.goal, targetDaysPerWeek: 1 } }, "2026-06-10")).toBe(true);
+  });
 });
 
 const habit: Habit = {
@@ -25,7 +30,7 @@ const habit: Habit = {
   emoji: "📚",
   color: "#7C3AED",
   shape: "circle",
-  goal: { streakGoal: "daily", completionsPerDay: 1 },
+  goal: { streakGoal: "daily", completionsPerDay: 1, targetDaysPerWeek: 3 },
   reminder: { count: 0, times: [] },
   status: "active",
   streak: { current: 1, best: 3 },

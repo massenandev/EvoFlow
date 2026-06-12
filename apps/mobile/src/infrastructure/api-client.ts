@@ -57,6 +57,10 @@ export class HabitApiClient {
     return this.request<Habit[]>(`/habits?deviceId=${encodeURIComponent(deviceId)}&from=${from}&to=${to}`);
   }
 
+  async listArchivedHabits(deviceId: string, from: string, to: string): Promise<Habit[]> {
+    return this.request<Habit[]>(`/habits/archived?deviceId=${encodeURIComponent(deviceId)}&from=${from}&to=${to}`);
+  }
+
   async createHabit(deviceId: string, values: HabitFormValues): Promise<Habit> {
     return this.request<Habit>("/habits", {
       method: "POST",
@@ -73,6 +77,13 @@ export class HabitApiClient {
 
   async archiveHabit(habitId: string, deviceId: string): Promise<Habit> {
     return this.request<Habit>(`/habits/${habitId}/archive`, {
+      method: "POST",
+      body: JSON.stringify({ deviceId })
+    });
+  }
+
+  async restoreHabit(habitId: string, deviceId: string): Promise<Habit> {
+    return this.request<Habit>(`/habits/${habitId}/restore`, {
       method: "POST",
       body: JSON.stringify({ deviceId })
     });
@@ -129,7 +140,8 @@ export class HabitApiClient {
     if (response.status === 204) {
       return undefined as T;
     }
-    return response.json() as Promise<T>;
+    const text = await response.text();
+    return text ? (JSON.parse(text) as T) : (undefined as T);
   }
 
   private async refreshSession(): Promise<boolean> {
